@@ -2,6 +2,7 @@ import { useLocation } from 'react-router-dom';
 import { useFetch } from '../../hooks/useFetch';
 import RecipeList from '../../components/RecipeList';
 import './Search.css';
+import { useTheme } from '../../hooks/useTheme';
 
 const Search = () => {
   const queryString = useLocation().search;
@@ -11,9 +12,10 @@ const Search = () => {
   const url = `http://localhost:3000/recipes?q=${query}`;
   const { error, isPending, data } = useFetch(url);
 
+  const { mode } = useTheme();
 
   return (
-    <div>
+    <div className={mode === 'dark' ? 'dark' : ''}>
       <h2 className='page-title'>Recipes including "{query}"</h2>
       {error && <p className='error'>{error}</p>}
       {isPending && <p className='loading'>Loading...</p>}

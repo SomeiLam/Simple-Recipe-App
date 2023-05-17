@@ -4,13 +4,18 @@ import Create from './pages/create/Create';
 import Search from './pages/search/Search';
 import Recipe from './pages/recipe/Recipe';
 import Navbar from './components/Navbar';
+import ThemeSelector from "./components/ThemeSelector";
 import './App.css';
+import { useTheme } from "./hooks/useTheme";
 
 function App() {
+  const { mode } = useTheme();
+
   return (
-    <div className="App">
+    <div className={`App ${mode === 'dark' ? 'dark' : ''}`}>
       <BrowserRouter>
         <Navbar />
+        <ThemeSelector />
         <Switch>
           <Route exact path="/create">
             <Create />

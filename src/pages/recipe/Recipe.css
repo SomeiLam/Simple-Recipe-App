@@ -27,10 +27,9 @@
   text-align: left;
   line-height: 1.5em;
 }
-.ingredients {
-  display: flex;
-  align-items: center;
-}
-.ingredients button {
-  margin: 0 0 0 10px;
+
+/* dark mode */
+.recipe.dark {
+  background: #555;
+  color: #e4e4e4;
 }
