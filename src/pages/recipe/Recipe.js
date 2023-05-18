@@ -1,12 +1,30 @@
-import { useParams } from 'react-router-dom';
-import { useFetch } from '../../hooks/useFetch';
+import { useEffect, useState } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 import './Recipe.css';
 import { useTheme } from '../../hooks/useTheme';
+import { projectFirestore } from '../../firebase/config';
 
 const Recipe = () => {
+  const [recipe, setRecipe] = useState(null);
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState(false);
+
   const { id } = useParams();
   const { mode } = useTheme();
-  const { data: recipe, isPending, error } = useFetch(`http://localhost:3000/recipes/${id}`);
+  const history = useHistory();
+
+  useEffect(() => {
+    setIsPending(true);
+    projectFirestore.collection('recipes').doc(id).get().then(doc => {
+      if (doc.exists) {
+        setIsPending(false);
+        setRecipe(doc.data());
+      } else {
+        setIsPending(false);
+        setError(`Could not find that recipe`);
+      };
+    });
+  }, [id]);
 
   return (
     <div className={`recipe ${mode === 'dark' ? 'dark' : ''}`}>
@@ -20,6 +38,11 @@ const Recipe = () => {
             {recipe.ingredients.map(ing => <li key={ing}>{ing}</li>)}
           </ul>
           <p className='method'>{recipe.method}</p>
+          <button
+            onClick={() => history.push({
+              pathname: '/update',
+              state: { recipe: recipe, id: id },
+            })}>Update me</button>
         </>
       )}
     </div>

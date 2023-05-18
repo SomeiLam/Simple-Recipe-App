@@ -20,6 +20,9 @@ function App() {
           <Route exact path="/create">
             <Create />
           </Route>
+          <Route exact path="/update">
+            <Create />
+          </Route>
           <Route exact path="/search">
             <Search />
           </Route>

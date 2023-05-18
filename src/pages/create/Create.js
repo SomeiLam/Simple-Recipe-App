@@ -1,22 +1,34 @@
 import { useState, useRef, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useFetch } from '../../hooks/useFetch';
+import { useHistory, useLocation } from 'react-router-dom';
 import './Create.css';
+import { projectFirestore } from '../../firebase/config';
 
 const Create = () => {
+  const [isUpdate, setIsUpdate] = useState(false);
   const [title, setTitle] = useState('');
   const [method, setMethod] = useState('');
   const [cookingTime, setCookingTime] = useState('');
   const [newIngredient, setNewIngredient] = useState('');
   const [ingredients, setIngredients] = useState([]);
+  const [error, setError] = useState(null);
   const ingredientsInput = useRef(null);
   const history = useHistory();
+  const location = useLocation();
 
-  const { postData, data, error } = useFetch('http://localhost:3000/recipes', 'POST');
-
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    postData({ title, ingredients, method, cookingTime: cookingTime + ' minutes' });
+    const doc = { title, ingredients, method, cookingTime: cookingTime + ' minutes' };
+    try {
+      if (isUpdate) {
+        await projectFirestore.collection('recipes').doc(location.state.id)
+          .update({ ...doc })
+      } else {
+        await projectFirestore.collection('recipes').add(doc)
+      };
+      history.push('/')
+    } catch (err) {
+      setError(err);
+    };
   };
 
   const handleAdd = e => {
@@ -30,12 +42,20 @@ const Create = () => {
   };
 
   useEffect(() => {
-    if (data) history.push('/');
-  }, [data, history]);
+    if (location.pathname === '/update') {
+      const { title, method, ingredients, cookingTime } = location.state.recipe;
+      setIsUpdate(true);
+      setTitle(title);
+      setMethod(method);
+      setIngredients(ingredients);
+      const cookingTimeInt = cookingTime.split(' ')[0];
+      setCookingTime(parseInt(cookingTimeInt));
+    };
+  }, [location.pathname, location.state.recipe]);
 
   return (
     <div className='create'>
-      <h2 className='page-title'>Add a New Recipe</h2>
+      <h2 className='page-title'>{isUpdate ? 'Update the Recipe' : 'Add a New Recipe'}</h2>
       {error && <p className='error'>{error}</p>}
       <form onSubmit={handleSubmit}>
         <label>
