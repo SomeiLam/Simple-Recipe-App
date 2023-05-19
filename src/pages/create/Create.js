@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import './Create.css';
 import { projectFirestore } from '../../firebase/config';
+import { useTheme } from '../../hooks/useTheme';
 
 const Create = () => {
   const [isUpdate, setIsUpdate] = useState(false);
@@ -12,6 +13,7 @@ const Create = () => {
   const [ingredients, setIngredients] = useState([]);
   const [error, setError] = useState(null);
   const ingredientsInput = useRef(null);
+  const { mode } = useTheme();
   const history = useHistory();
   const location = useLocation();
 
@@ -51,10 +53,10 @@ const Create = () => {
       const cookingTimeInt = cookingTime.split(' ')[0];
       setCookingTime(parseInt(cookingTimeInt));
     };
-  }, [location.pathname, location.state.recipe]);
+  }, [location.pathname, location.state?.recipe]);
 
   return (
-    <div className='create'>
+    <div className={`${mode === 'dark' ? 'dark' : ''} create`}>
       <h2 className='page-title'>{isUpdate ? 'Update the Recipe' : 'Add a New Recipe'}</h2>
       {error && <p className='error'>{error}</p>}
       <form onSubmit={handleSubmit}>
@@ -82,7 +84,13 @@ const Create = () => {
             >add</button>
           </div>
         </label>
-        <p>Current ingredients: {ingredients.map(i => <em key={i}>{i}, </em>)}</p>
+        <p>Current ingredients: {ingredients.map(i =>
+          <span key={i} onClick={() => {
+            const updatedArray = ingredients.filter(j => j !== i);
+            setIngredients(updatedArray);
+          }}>{i}, </span>
+        )}</p>
+        <p className='delete-tips'>Click on an ingredient to delete it</p>
         <label>
           <span>Recipe method:</span>
           <textarea

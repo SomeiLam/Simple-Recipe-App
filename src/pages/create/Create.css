@@ -3,6 +3,9 @@
   max-width: 480px;
   margin: 60px auto;
 }
+.dark {
+  color: white;
+}
 .create label span {
   display: block;
   margin: 30px 0 10px;
@@ -23,4 +26,14 @@
   cursor: pointer;
   text-decoration: none;
   margin: 20px auto;
+}
+.create .delete-tips {
+  font-size: 0.5em;
+}
+.ingredients {
+  display: flex;
+  align-items: center;
+}
+.ingredients button {
+  margin: 0 0 0 10px;
 }
